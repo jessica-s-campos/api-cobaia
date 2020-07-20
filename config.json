@@ -1,0 +1,17 @@
+{
+	"emails": [{
+            "host": "mail.eliascosta.com.br",
+            "port": 465,
+            "secure": true,
+			"email": "falecomigo@eliascosta.com.br",
+			"pass": "EliasMestrado2020@"
+		},
+		{
+            "host": "smtp.gmail.com",   
+            "port": 465,
+            "secure": true,
+			"email": "jessicacampos.si@gmail.com",
+			"pass": "zxbgfsmvtdsqsgbb"
+		}
+	]
+}
