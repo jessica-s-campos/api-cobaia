@@ -4,16 +4,23 @@ const nodemailer = require('nodemailer');
 const crypto = require("crypto-js");
 const fs = require('fs');
 const path = require('path');
+const db = require('../db')
 
+let dupla_quebra_linha = '\r\n' + '\r\n';
 let remetente = {};
 
 function Send(from, to, subject, text) {
+    var data = new Date();
+
+    var cabecalho = `Data/Hora do envio : ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()}  ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`;
     
+    var texto = cabecalho + dupla_quebra_linha + 'Mensagem:' + dupla_quebra_linha + `${text}`;
+
     let emailASerEnviado = {
         from: from,
         to: to,
         subject: subject,
-        text: text,
+        text: texto,
     };
 
     return new Promise((resolve,reject) => {
@@ -43,45 +50,36 @@ function Configure(host, port, secure, user, pass){
     });
 }
 
-function getInfos(user){
-    
-    let rawdata = fs.readFileSync(path.join(__dirname,'../../config.json'));
-
-    let emails = Array.from(JSON.parse(rawdata).emails);
-    
-    let infos = emails.filter((o) => o.email === user)[0];
-    
-    return infos;
-}
-
 exports.post = (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    var infos = getInfos(req.body.user);
+    db.query(`select * from cfgemails where email = '${req.body.user}'`)
+    .then( result => {   
 
-    if(!infos){
-        res.status(502).send({ message : `dados do usuário ${req.body.user} não foram encontrados para envio de e-mail`});   
-    }            
+        if(result.rows.length > 0){
+            
+            let infos = result.rows[0];
+            
+            Configure(infos.host, infos.port, infos.secure, req.body.user, infos.password);
+        
+            Send(req.body.from, req.body.to, req.body.subject, req.body.text)
+            .then((message) => res.status(200).send({message : message, dados : req.body}))
+            .catch((error) => {        
+                res.status(502).send({ retorno : error});   
+            });  
 
-    var host = infos.host;
-    var port = infos.port; 
-    var pass = infos.pass;
-    var secure = infos.secure;
+        }
+        else{
+            res.status(502).send({ message : `dados do usuário ${req.body.user} não foram encontrados para envio de e-mail`});   
+            return; 
+        }
+            
+    })
+    .catch(err => {
+        res.status(502).send({ message : `Ocorreu um erro: ${err}`});   
+    })
 
-    var user = req.body.user;
-    var nome = req.body.name;
-    var from = req.body.from;
-    var to = req.body.to;
-    var subject = req.body.subject;
-    var text = req.body.text;
-    
-    Configure(host, port, secure, user, pass);
-
-    Send(from, to, subject, text)
-    .then((message) => res.status(200).send({message : message, dados : req.body}))
-    .catch((error) => {        
-        res.status(502).send({ retorno : error});   
-    });    
+   
 }
 
 
