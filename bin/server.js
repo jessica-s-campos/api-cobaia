@@ -1,6 +1,5 @@
 'use strict'
 const app = require('../src/app');
-<<<<<<< HEAD
 const https = require('https');
 const debug = require('debug')('api:email');
 const openssl = require('openssl-nodejs')
@@ -26,29 +25,11 @@ const options = {
 app.set('port', port);
 
 const server = https.createServer(options,app);
-=======
-const http = require('http');
-const debug = require('debug')('api:email');
-
-const nodemailer = require('nodemailer');
-
-const port = normalizePort(process.env.PORT || 3000);
-
-app.set('port', port);
-
-const server = http.createServer(app);
-
-
->>>>>>> d64b717bb864b1c8ded85557301c2bc44f85cae2
 server.listen(port);
 server.on('error',onError);
 server.on('listening',onListening);
 
-<<<<<<< HEAD
 console.log('HTTPS - API rodando na porta '+port);
-=======
-console.log('API rodando na porta '+port);
->>>>>>> d64b717bb864b1c8ded85557301c2bc44f85cae2
 
 function normalizePort(val) {
     const port = parseInt(val, 10);
@@ -85,16 +66,8 @@ function onError(error) {
     }
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d64b717bb864b1c8ded85557301c2bc44f85cae2
 function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     debug('Listening on ' + bind);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> d64b717bb864b1c8ded85557301c2bc44f85cae2

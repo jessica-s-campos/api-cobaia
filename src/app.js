@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const router = express.Router();
 const cors = require('cors');
-<<<<<<< HEAD
 var cookieSession = require('cookie-session')
 var cookieParser = require('cookie-parser')
 var Keygrip = require('keygrip')
@@ -41,17 +40,5 @@ app.use(cookieParser({
     //expires: new Date('01 12 2021'),
 }))
 
-=======
-
-const indexRoutes = require('./routes/index-routes');
-const productsRoutes = require('./routes/products-routes');
-//const sendEmailRoutes = require('./routes/send-email-routes');
-const custosPorVenderRoutes = require('./routes/custos-por-vender-routes');
-
-app.use('/',indexRoutes);
-//app.use('/products',productsRoutes);
-//app.use('/sendemail',sendEmailRoutes);
-app.use('/custos-por-vender',custosPorVenderRoutes);
->>>>>>> d64b717bb864b1c8ded85557301c2bc44f85cae2
 app.use(cors());
 module.exports = app;

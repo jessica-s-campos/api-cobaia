@@ -5,18 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-<<<<<<< HEAD
     "start": "nodemon ./bin/server.js",
     "debug": "node --inspect ./bin/server.js"
-=======
-    "start": "node ./bin/server.js"
->>>>>>> d64b717bb864b1c8ded85557301c2bc44f85cae2
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
     "@google-cloud/vision": "^2.4.2",
     "axios": "^0.27.2",
     "body-parser": "^1.19.0",
@@ -39,18 +34,4 @@
     "request-progress": "^3.0.0",
     "tesseract.js": "^2.1.5"
   }
-=======
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "crypto-js": "^4.0.0",
-    "debug": "^4.1.1",
-    "express": "^4.17.1",
-    "get-json": "^1.0.1",
-    "http": "0.0.1-security",
-    "nodemailer": "^6.4.10",
-    "pg": "^8.3.0",
-    "request": "^2.88.2"
-  },
-  "devDependencies": {}
->>>>>>> d64b717bb864b1c8ded85557301c2bc44f85cae2
 }
