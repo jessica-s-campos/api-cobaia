@@ -27,8 +27,8 @@ var CredenciaisRepo = new CredenciaisRepository();
 var AccountUserRepo = new AccountUserRepository();
 
 exports.getAuthentication = async (req, res) => {    
-    credenciais = await CredenciaisRepo.listBy({ marketplace : "meli"});   
-    
+    credenciais = await CredenciaisRepo.listBy({ marketplace : "meli"});    
+    console.log(`oláa`)   
     credenciais = credenciais[0];  
 
     console.log(`mercado livre\nverificando credenciais`)
