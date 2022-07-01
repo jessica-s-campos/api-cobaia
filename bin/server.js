@@ -1,6 +1,7 @@
 'use strict'
 const app = require('../src/app');
-const https = require('https');
+//const https = require('https');
+const http = require('http');
 const debug = require('debug')('api:email');
 const openssl = require('openssl-nodejs')
 let fs = require('fs');
@@ -23,7 +24,7 @@ const options = {
     cert: fs.readFileSync(path.resolve(__dirname, "../certificado/server.cert"))
   };
 
-const server = https.createServer(options,app);
+const server = http.createServer(app);
 server.listen(process.env.PORT || 3000);
 server.on('error',onError);
 server.on('listening',onListening);
