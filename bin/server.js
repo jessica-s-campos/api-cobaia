@@ -4,6 +4,7 @@ const https = require('https');
 const debug = require('debug')('api:email');
 const openssl = require('openssl-nodejs')
 let fs = require('fs');
+const path = require("path");
 const mongoose = require("mongoose");
 
 mongoose.connect('mongodb://localhost:27017/stormidb');
@@ -17,8 +18,8 @@ db.once("open", function () {
 const nodemailer = require('nodemailer');
 
 const options = { 
-    key: fs.readFileSync("C:\\Users\\jessi\\server.key"),
-    cert: fs.readFileSync("C:\\Users\\jessi\\server.cert")
+    key: fs.readFileSync(path.resolve(__dirname, "../certificado/server.key")),
+    cert: fs.readFileSync(path.resolve(__dirname, "../certificado/server.cert"))
   };
 
 const server = https.createServer(options,app);
