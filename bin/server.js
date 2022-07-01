@@ -7,7 +7,8 @@ let fs = require('fs');
 const path = require("path");
 const mongoose = require("mongoose");
 
-mongoose.connect('mongodb://localhost:27017/stormidb');
+//mongoose.connect('mongodb://localhost:27017/stormidb');
+mongoose.connect('mongodb+srv://jessicacampos:jess1092066@cluster0.bpqwyzp.mongodb.net/stormidb?retryWrites=true&w=majority');
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error: "));
