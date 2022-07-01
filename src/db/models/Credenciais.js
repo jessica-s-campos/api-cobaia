@@ -1,14 +1,13 @@
 const mongoose = require("mongoose");
-const Credencial = require("../domain/Credencial");
 
-const CredencialSchema = new mongoose.Schema({
+const Credencial = new mongoose.Schema({
     marketplace: {
       type: String,
       required: true,
     },
     seller_id: {
       type: Number,
-      required: true,
+      required: false,
     },
     access_token: {
       type: String,
@@ -49,13 +48,7 @@ const CredencialSchema = new mongoose.Schema({
       type: String,
       required: false,
     },
-  });
-  
-//Objeto que contem os dados
-CredencialSchema.loadClass(Credencial);
+});
 
-const Model = mongoose.model("Credenciais", CredencialSchema);
+module.exports = mongoose.model("credenciais", Credencial, "credenciais");
 
-module.exports = {
-    Model: Model
-}

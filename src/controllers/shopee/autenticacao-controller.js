@@ -5,10 +5,9 @@ const crypto = require('crypto')
 var https = require('https')
 const axios = require('axios');
 
-const CredenciaisRepository = require("../../db/repositories/CredenciaisRepository");
-const Credencial = require('../../db/domain/Credencial');
-const AccountUserRepository = require("../../db/repositories/AccountUserRepository");
-const UserAccount = require('../../db/domain/UserAccount');
+const GenericRepository = require("../../db/repositories/GenericRepository");
+const Credencial = require('../../db/models/Credenciais');
+const UserAccount = require('../../db/models/UserAccount');
 
 var partnerID = 1007898
 var partnerKey = "c207fa504273b078d690031b67b70adad5b083e0c29c10f392535978edd44257"
@@ -16,9 +15,10 @@ var host = "https://partner.test-stable.shopeemobile.com"
 var redirect_url = "https://localhost:3000/autenticacao/shopee/success"   
 
 var credenciais;
+let repo = new GenericRepository();
 
 exports.getAuthentication = async (req, res) => {    
-    credenciais = await List({ marketplace : "shopee"}); 
+    credenciais = await repo.listBy({ marketplace : "shopee"},"credenciais");  
     credenciais = credenciais[0];  
 
     console.log(`shopee\nverificando credenciais`)
@@ -79,32 +79,35 @@ function getToken(code, shop_id, res, refresh){
         let expire_time = new Date().setSeconds(requested_in.getSeconds() + rex.data.expire_in);          
         
         if(refresh)
-            CredenciaisRepository.excluir({ marketplace : "shopee"})
+            repo.excluir({ marketplace : "shopee"},"credenciais")
         
-            CredenciaisRepository.adicionar(
-                new Credencial("shopee",rex.data.refresh_token,
-                rex.data.expires_in,
-                rex.data.user_id,
-                expire_time,
-                rex.data.access_token,
-                partnerID,
-                partnerKey,
-                redirect_url,
-                shop_id)
-            )
-        
-        
-        credenciais = List({ marketplace : "shopee"}); 
 
-        //getAccountUser(req,res);
+        let aux = new Credencial({
+            marketplace : "shopee",
+            refresh_token: rex.data.refresh_token,
+            expire_in : rex.data.expires_in,
+            user_id : rex.data.user_id,
+            expire_time : expire_time,
+            access_token : rex.data.access_token,
+            app_id: partnerID,
+            app_key : partnerKey,
+            redirect_url : redirect_url,
+            shop_id:shop_id
+        })
+
+        repo.adicionar(aux)
+        
+        
+        credenciais = repo.listBy({ marketplace : "shopee"},"credenciais");  
+
+        //getAccountUser();
 
         res.redirect(`https://localhost:3000/main/start`)
     });    
 }
 
 
-exports.getAccountUser = (req, res) => {
-
+function getAccountUser(){
     console.log('getAccountUser shopee')    
     let url = "";
 
@@ -116,10 +119,14 @@ exports.getAccountUser = (req, res) => {
 
     axios.get(url,options)
     .then((rex)=>
-    {                             
-        AccountUserRepository.adicionar(
-            new UserAccount(rex.data.id,rex.data.nickname,rex.data.first_name,rex.data.last_name)
-        )
+    {                           
+        let aux = new UserAccount({
+            id:rex.data.id,
+            nickname:rex.data.nickname,
+            first_name:rex.data.first_name,
+            last_name:rex.data.last_name
+        })  
+        repo.adicionar(aux)
     
     });   
     

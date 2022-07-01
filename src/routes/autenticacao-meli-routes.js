@@ -9,7 +9,6 @@ router.get('/', controller.getAuthentication);
 router.get('/success', controller.getAuthenticationSuccess);
 router.get('/obter-preco-venda', controller.getPrecoVenda);
 router.get('/obter-item', controller.getItem);
-router.get('/obter-dados-usuario', controller.getAccountUser);
 
 
 

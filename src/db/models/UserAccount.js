@@ -20,11 +20,5 @@ const UserAccountSchema = new mongoose.Schema({
     }
   });
 
-//Objeto que contem os dados
-UserAccountSchema.loadClass(UserAccount);
   
-var Model = mongoose.model("UserAccount", UserAccountSchema);
-
-module.exports = {
-  Model: Model
-}
+  module.exports = mongoose.model("UserAccount", UserAccountSchema,"contasdeusuario");

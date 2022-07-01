@@ -3,11 +3,9 @@
 const { redirect } = require('express/lib/response')
 var https = require('https')
 const axios = require('axios');
-
-const CredenciaisRepository = require("../../db/repositories/CredenciaisRepository");
-const Credencial = require('../../db/domain/Credencial');
-const AccountUserRepository = require("../../db/repositories/AccountUserRepository");
-const UserAccount = require('../../db/domain/UserAccount');
+const Credencial = require('../../db/models/Credenciais');
+const UserAccount = require('../../db/models/UserAccount');
+const GenericRepository = require("../../db/repositories/GenericRepository");
 
 var app_id = 1354321273735197;
 var client_secret = "LHPaHLrab9oRTfeeyjT1oLpQHAdMaIwy"
@@ -22,16 +20,13 @@ var user_test = {
 }
 
 var credenciais;
-var accountUser;
-var CredenciaisRepo = new CredenciaisRepository();
-var AccountUserRepo = new AccountUserRepository();
+let repo = new GenericRepository();
 
-exports.getAuthentication = async (req, res) => {    
-    credenciais = await CredenciaisRepo.listBy({ marketplace : "meli"});     
+exports.getAuthentication = async (req, res) => {        
+    credenciais = await repo.listBy({ marketplace : "meli"},"credenciais");     
     credenciais = credenciais[0];  
-
     console.log(`mercado livre\nverificando credenciais`)
-    
+
     if(credenciais == undefined){
         console.log('obtem autenticacao')
         ObtemAutorizacao(res)
@@ -104,23 +99,25 @@ function getToken(code, res, refresh){
         let expire_time = new Date().setSeconds(requested_in.getSeconds() + rex.data.expires_in);   
         
         if(refresh)
-            CredenciaisRepo.excluir({ marketplace : "meli"})
-        
-            CredenciaisRepo.adicionar(
-                new Credencial("meli",rex.data.refresh_token,
-                rex.data.expires_in,
-                rex.data.user_id,
-                expire_time,
-                rex.data.access_token,
-                app_id,
-                client_secret,
-                redirect_url)
-            )
-        
-        
-        credenciais = CredenciaisRepo.listBy({ marketplace : "meli"}); 
+            repo.excluir({ marketplace : "meli"},"credenciais")
 
-        getAccountUser(req,res);
+        let aux = new Credencial({
+            marketplace : "meli",
+            refresh_token: rex.data.refresh_token,
+            expire_in : rex.data.expires_in,
+            user_id : rex.data.user_id,
+            expire_time : expire_time,
+            access_token : rex.data.access_token,
+            app_id: app_id,
+            app_key : client_secret,
+            redirect_url : redirect_url
+        })
+        repo.adicionar(aux)
+        
+        
+        credenciais = repo.listBy({ marketplace : "meli"},"credenciais"); 
+
+        getAccountUser(aux.access_token);
 
         //getUserTest(req,res)
 
@@ -192,26 +189,31 @@ exports.getUserTest = (req, res) => {
     
 }
 
-exports.getAccountUser = (req, res) => {
+function getAccountUser(token) {
 
-    console.log('getAccountUser meli')    
+    console.log('getAccountUser meli')
     let url = "https://api.mercadolibre.com/users/me";
 
     var options = {
         headers : {
             'Content-Type' : 'application/json',
-            'Authorization' : 'Bearer '+credenciais.access_token
+            'Authorization' : 'Bearer '+token
         }
     };
 
     axios.get(url,options)
     .then((rex)=>
-    {                             
-        AccountUserRepo.adicionar(
-            new UserAccount(rex.data.id,rex.data.nickname,rex.data.first_name,rex.data.last_name)
-        )       
+    {                            
+        let aux = new UserAccount({
+            id:rex.data.id,
+            nickname:rex.data.nickname,
+            first_name:rex.data.first_name,
+            last_name:rex.data.last_name
+        })
+
+        repo.adicionar(aux)       
     
-    });   
+    }).catch((err) => console.log(err));   
     
 }
 
